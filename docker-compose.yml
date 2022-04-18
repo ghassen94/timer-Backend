@@ -1,0 +1,41 @@
+version: "3.7"
+
+services:
+  backend:
+    container_name: timer-back-end
+    restart: always
+    build: .
+    environment:
+      - APP_ENV=development
+      - APP_PORT=9000
+    volumes:
+      - ./src:/var/www/timer-back-end/src
+      - ./test:/var/www/timer-back-end/test
+    working_dir: /var/www/timer-back-end
+    ports:
+      - "9001:9000"
+    links:
+      - mysql
+    depends_on:
+      - mysql
+  mysql: # Example Service
+    container_name: timer-back-end_mysql
+    restart: always
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=
+      - MYSQL_DATABASE=timer
+    ports:
+    - "3308:3306"
+    volumes:
+    - timer-back-end_mysql_data:/var/lib/mysql
+
+volumes:
+  timer-back-end_mysql_data:
+
+networks:
+  default:
+    external:
+      name: timer-back-end
