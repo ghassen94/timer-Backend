@@ -1,7 +1,7 @@
 import { AddPeriodDto } from './dto/addPeriodDto.dto';
 import { Period } from 'src/typeorm';
 import { PeriodService } from './period.service';
-import { Body, Controller, Get, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
@@ -18,12 +18,10 @@ export class PeriodController {
    
     async getTimers(@Res() res) {
         try {
-            let findTimers = await this.periodService.getTodayTimes()
-            console.log("res findTimers : ", findTimers);
-            
+            let times = await this.periodService.getTodayTimes()
             return res.status(HttpStatus.OK).json({
                 status: HttpStatus.OK,
-                findTimers
+                times
             })
         } catch (error) {
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -34,7 +32,7 @@ export class PeriodController {
 
     @Post("saveTodayTimers")
     @ApiProperty()
-    async saveTimers(@Req() req, @Res() res, @Body() body: AddPeriodDto) {
+    async saveTimers(@Res() res, @Body() body: AddPeriodDto) {
         const { index, hour, minute, second, startAt, endAt, createdAt } = body
 
         try {
@@ -47,11 +45,13 @@ export class PeriodController {
             period.startAt = startAt;
             period.endAt = endAt;
             period.createdAt = createdAt
+
+            // create time
             const createTime = await this.periodService.saveTodayTimes(period)
             return res.status(HttpStatus.CREATED).json({
                 code: HttpStatus.CREATED,
                 message: "time created",
-                user : createTime
+                time : createTime
             })
         } catch (error) {
             return res.status(HttpStatus.BAD_REQUEST).json({

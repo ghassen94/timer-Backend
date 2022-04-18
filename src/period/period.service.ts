@@ -11,7 +11,7 @@ export class PeriodService {
 
     // get timese for today
     async getTodayTimes(): Promise<Period[]> {
-        //format today fomat
+        //format today 
         const now = new Date()
         const y = now.getFullYear()
         const m = now.getMonth()+1
